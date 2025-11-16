@@ -1,0 +1,3 @@
+/home/travis/GameDev/LearnOpenGL/build/CMakeFiles/Engine.dir
+/home/travis/GameDev/LearnOpenGL/build/CMakeFiles/edit_cache.dir
+/home/travis/GameDev/LearnOpenGL/build/CMakeFiles/rebuild_cache.dir
