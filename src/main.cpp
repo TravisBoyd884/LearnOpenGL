@@ -4,6 +4,11 @@
 #include "stb_image.h"
 #include <GLFW/glfw3.h>
 #include <cstdlib>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <math.h>
 
@@ -66,8 +71,8 @@ int main() {
 
   glGenTextures(2, textures);
   glBindTexture(GL_TEXTURE_2D, textures[0]);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   int width, height, nrChannels;
@@ -99,17 +104,28 @@ int main() {
   }
   stbi_image_free(data);
 
+  float mixValue = 0;
+
   myShader.use();
   myShader.setInt("texture0", 0);
   myShader.setInt("texture1", 1);
+  myShader.setFloat("myMix", mixValue);
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
+    // if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    //   mixValue += 0.1f;
+    //   myShader.setFloat("mixValue", mixValue);
+    // } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    //   mixValue -= 0.1f;
+    //   myShader.setFloat("mixValue", mixValue);
+    // }
+    myShader.setFloat("mixValue", (sin(glfwGetTime()) / 2.0f) + 0.5f);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // bind textures on corresponding texture units
+    // bind textures to texture units
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glActiveTexture(GL_TEXTURE1);
@@ -117,7 +133,22 @@ int main() {
 
     // render container
     myShader.use();
+
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    trans =
+        glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    // Set texture unit indices
+    myShader.setMat4("transform", trans);
     glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    trans = glm::mat4(1.0f); // reset it to identity matrix
+    trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+    float scaleAmount = static_cast<float>(sin(glfwGetTime()));
+    trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+    myShader.setMat4("transform", trans);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
@@ -132,8 +163,9 @@ int main() {
   return 0;
 }
 void processInput(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
+  }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
