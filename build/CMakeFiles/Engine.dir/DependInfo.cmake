@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/travis/GameDev/LearnOpenGL/src/glad.c" "CMakeFiles/Engine.dir/src/glad.c.o" "gcc" "CMakeFiles/Engine.dir/src/glad.c.o.d"
   "/home/travis/GameDev/LearnOpenGL/src/main.cpp" "CMakeFiles/Engine.dir/src/main.cpp.o" "gcc" "CMakeFiles/Engine.dir/src/main.cpp.o.d"
+  "/home/travis/GameDev/LearnOpenGL/src/stb_image.cpp" "CMakeFiles/Engine.dir/src/stb_image.cpp.o" "gcc" "CMakeFiles/Engine.dir/src/stb_image.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

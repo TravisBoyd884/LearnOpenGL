@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(Engine
     src/main.cpp
     src/glad.c         
+    src/stb_image.cpp
 )
 
 # --- Include directories ---
