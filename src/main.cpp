@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 
+#include "camera.hpp"
 #include "shader.hpp"
 #include "stb_image.h"
 #include <GLFW/glfw3.h>
@@ -21,18 +22,16 @@ int init_glad();
 // settings
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
-float lastX = 400, lastY = 300;
-
-float yaw = -90.0f;
-float pitch = 0.0f;
+// camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCR_WIDTH / 2.0f;
+float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+
+// timing
+float deltaTime = 0.0f; // time between current frame and last frame
+float lastFrame = 0.0f;
 
 int main() {
   GLFWwindow *window = create_window();
@@ -179,7 +178,7 @@ int main() {
     myShader.setMat4("projection", projection);
 
     // camera/view transformation
-    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    glm::mat4 view = camera.GetViewMatrix();
     myShader.setMat4("view", view);
     // myShader.setMat4("view", view);
     // myShader.setMat4("projection", projection);
@@ -210,17 +209,14 @@ void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
 
-  float cameraSpeed = static_cast<float>(2.5 * deltaTime);
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    cameraPos += cameraSpeed * cameraFront;
+    camera.ProcessKeyboard(FORWARD, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    cameraPos -= cameraSpeed * cameraFront;
+    camera.ProcessKeyboard(BACKWARD, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    cameraPos -=
-        glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    camera.ProcessKeyboard(LEFT, deltaTime);
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    cameraPos +=
-        glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
@@ -278,25 +274,9 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
   float xoffset = xpos - lastX;
   float yoffset =
       lastY - ypos; // reversed since y-coordinates go from bottom to top
+
   lastX = xpos;
   lastY = ypos;
 
-  float sensitivity = 0.1f; // change this value to your liking
-  xoffset *= sensitivity;
-  yoffset *= sensitivity;
-
-  yaw += xoffset;
-  pitch += yoffset;
-
-  // make sure that when pitch is out of bounds, screen doesn't get flipped
-  if (pitch > 89.0f)
-    pitch = 89.0f;
-  if (pitch < -89.0f)
-    pitch = -89.0f;
-
-  glm::vec3 front;
-  front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-  front.y = sin(glm::radians(pitch));
-  front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-  cameraFront = glm::normalize(front);
+  camera.ProcessMouseMovement(xoffset, yoffset);
 }
