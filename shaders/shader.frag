@@ -9,7 +9,11 @@ uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float mixValue;
 
+uniform vec3 objectColor;
+uniform vec3 lightColor;
+
 void main()
 {
-    FragColor = mix(texture(texture0, TexCoord), texture(texture1, TexCoord), texture(texture1, TexCoord).a);
+    // FragColor = mix(texture(texture0, TexCoord), texture(texture1, TexCoord), texture(texture1, TexCoord).a);
+    FragColor = vec4(lightColor * objectColor, 1.0);
 }
