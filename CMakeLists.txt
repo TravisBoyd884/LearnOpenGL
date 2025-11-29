@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 23)
 # --- Create your main executable ---
 add_executable(Engine
     src/main.cpp
+    src/scene.cpp
     src/glad.c         
     src/stb_image.cpp
 )
