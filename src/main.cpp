@@ -98,7 +98,12 @@ void limitFrameRate(
   }
 }
 
+static void glfw_error_callback(int error, const char *description) {
+  std::cerr << "[GLFW ERROR] (" << error << "): " << description << '\n';
+}
+
 int main() {
+  glfwSetErrorCallback(glfw_error_callback);
   Window window(800, 800, "LearnOpenGL");
   Scene scene(window);
 
@@ -223,7 +228,6 @@ int main() {
   glDeleteVertexArrays(1, &cubeMesh.vao);
   glDeleteVertexArrays(1, &lightCubeMesh.vao);
   glDeleteBuffers(1, &cubeMesh.vbo);
-  glfwTerminate();
 
   return 0;
 }

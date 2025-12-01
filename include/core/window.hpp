@@ -5,6 +5,8 @@ class Window {
 public:
   Window(int width, int height, const std::string &title);
   ~Window();
+  Window(const Window &) = delete;
+  Window &operator=(const Window &) = delete;
 
   GLFWwindow *get_window() const { return window_; }
   bool shouldClose() const; // or isOpen()
@@ -14,7 +16,7 @@ public:
   uint height() const { return SCR_HEIGHT; }
 
 private:
-  bool s_glfwInitialized;
+  static bool s_glfwInitialized;
   uint SCR_WIDTH;
   uint SCR_HEIGHT;
   GLFWwindow *window_ = nullptr;

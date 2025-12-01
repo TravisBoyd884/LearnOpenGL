@@ -2,6 +2,8 @@
 #include "pch.hpp"
 #include <iostream>
 
+bool Window::s_glfwInitialized = false;
+
 Window::Window(int width, int height, const std::string &title)
     : SCR_WIDTH(800), SCR_HEIGHT(800) {
 
@@ -30,6 +32,7 @@ void Window::init_GLFW() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
