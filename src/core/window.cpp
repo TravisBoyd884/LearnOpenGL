@@ -15,7 +15,7 @@ Window::~Window() {
     glfwDestroyWindow(window_);
     window_ = nullptr;
   }
-  glfwTerminate(); // see note about global state below
+  glfwTerminate();
 }
 
 void Window::init_GLFW() {
