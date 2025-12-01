@@ -16,7 +16,7 @@ public:
   uint height() const { return SCR_HEIGHT; }
 
 private:
-  static bool s_glfwInitialized;
+  inline static bool s_glfwInitialized = false;
   uint SCR_WIDTH;
   uint SCR_HEIGHT;
   GLFWwindow *window_ = nullptr;

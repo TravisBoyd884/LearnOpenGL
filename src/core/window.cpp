@@ -2,8 +2,6 @@
 #include "pch.hpp"
 #include <iostream>
 
-bool Window::s_glfwInitialized = false;
-
 Window::Window(int width, int height, const std::string &title)
     : SCR_WIDTH(800), SCR_HEIGHT(800) {
 
