@@ -57,6 +57,7 @@ GLFWwindow *Scene::create_window() {
     std::exit(-1);
   }
   glfwMakeContextCurrent(window);
+  glfwSwapInterval(0);
 
   glfwSetWindowUserPointer(window, this);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);

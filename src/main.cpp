@@ -1,5 +1,7 @@
 #include "scene.hpp"
+#include <chrono>
 #include <glad/glad.h>
+#include <thread>
 
 #include "camera.hpp"
 #include "shader.hpp"
@@ -16,6 +18,9 @@
 
 unsigned int loadTexture(const char *path);
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+const double TARGET_FPS = 144.0;
+const double TARGET_FRAME_TIME = 1.0 / 144.0; // seconds
 
 int main() {
   Scene s;
@@ -121,8 +126,21 @@ float vertices[] = {
   cubeShader.use();
   cubeShader.setInt("material.diffuse", 0);
   cubeShader.setInt("material.specular", 1);
+  double previousTime = glfwGetTime();
+  int frameCount = 0;
 
   while (!s.shouldClose()) {
+    auto frameStart = std::chrono::high_resolution_clock::now();
+    double currentTime = glfwGetTime();
+    frameCount++;
+    // If a second has passed, compute FPS
+    if (currentTime - previousTime >= 1.0) {
+      double fps = frameCount / (currentTime - previousTime);
+      std::cout << "FPS: " << fps << "\n";
+
+      frameCount = 0;
+      previousTime = currentTime;
+    }
 
     s.processInput();
 
@@ -180,6 +198,17 @@ float vertices[] = {
 
     s.swapBuffers();
     glfwPollEvents();
+    // frame end time
+    auto frameEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> frameDuration = frameEnd - frameStart;
+    double frameTime = frameDuration.count(); // in seconds
+
+    // if the frame was faster than our target, sleep the remainder
+    if (frameTime < TARGET_FRAME_TIME) {
+      double sleepTime = TARGET_FRAME_TIME - frameTime;
+
+      std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+    }
   }
 
   glDeleteVertexArrays(1, &cubeVAO);
