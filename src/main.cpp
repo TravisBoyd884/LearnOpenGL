@@ -1,17 +1,17 @@
-#include "camera.hpp"
+#include "core/window.hpp"
 #include "pch.hpp"
-#include "scene.hpp"
-#include "shader.hpp"
-#include "stb_image.h"
-#include "texture.hpp"
+#include "render/shader.hpp"
+#include "render/texture.hpp"
+#include "scene/scene.hpp"
 
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
-const double TARGET_FPS = 144.0;
-const double TARGET_FRAME_TIME = 1.0 / 144.0; // seconds
+const double TARGET_FPS = 144.0 + 4;
+const double TARGET_FRAME_TIME = 1.0 / TARGET_FPS; // seconds
 
 int main() {
-  Scene s;
+  Window window(800, 800, "LearnOpenGL");
+  Scene scene(window);
 
   glEnable(GL_DEPTH_TEST);
 
@@ -117,7 +117,7 @@ float vertices[] = {
   double previousTime = glfwGetTime();
   int frameCount = 0;
 
-  while (!s.shouldClose()) {
+  while (!window.shouldClose()) {
     auto frameStart = std::chrono::high_resolution_clock::now();
     double currentTime = glfwGetTime();
     frameCount++;
@@ -130,7 +130,7 @@ float vertices[] = {
       previousTime = currentTime;
     }
 
-    s.processInput();
+    scene.processInput();
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -138,7 +138,7 @@ float vertices[] = {
     // be sure to activate shader when setting uniforms/drawing objects
     cubeShader.use();
     cubeShader.setVec3("light.position", lightPos);
-    cubeShader.setVec3("viewPos", s.camera().Position);
+    cubeShader.setVec3("viewPos", scene.camera().Position);
 
     // light properties
     cubeShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
@@ -149,10 +149,10 @@ float vertices[] = {
     cubeShader.setFloat("material.shininess", 64.0f);
 
     // view/projection transformations
-    glm::mat4 projection =
-        glm::perspective(glm::radians(s.camera().Zoom),
-                         (float)s.width() / (float)s.height(), 0.1f, 100.0f);
-    glm::mat4 view = s.camera().GetViewMatrix();
+    glm::mat4 projection = glm::perspective(
+        glm::radians(scene.camera().Zoom),
+        (float)window.width() / (float)window.height(), 0.1f, 100.0f);
+    glm::mat4 view = scene.camera().GetViewMatrix();
     cubeShader.setMat4("projection", projection);
     cubeShader.setMat4("view", view);
 
@@ -184,7 +184,7 @@ float vertices[] = {
     glBindVertexArray(lightCubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    s.swapBuffers();
+    window.swapBuffers();
     glfwPollEvents();
     // frame end time
     auto frameEnd = std::chrono::high_resolution_clock::now();

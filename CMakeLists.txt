@@ -11,9 +11,10 @@ target_include_directories(glad PUBLIC
 # --- Create your main executable ---
 add_executable(Engine
     src/main.cpp
-    src/scene.cpp
+    src/scene/scene.cpp
+    src/core/window.cpp
     src/stb_image.cpp
-    src/texture.cpp
+    src/render/texture.cpp
 )
 
 # --- Include directories ---
