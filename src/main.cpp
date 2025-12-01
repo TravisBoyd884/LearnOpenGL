@@ -15,10 +15,13 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
-  Shader myShader("../shaders/shader.vert", "../shaders/shader.frag");
+  Shader myShader("../assets/shaders/shader.vert",
+                  "../assets/shaders/shader.frag");
 
-  Shader lightShader("../shaders/light.vert", "../shaders/light.frag");
-  Shader cubeShader("../shaders/cube.vert", "../shaders/cube.frag");
+  Shader lightShader("../assets/shaders/light.vert",
+                     "../assets/shaders/light.frag");
+  Shader cubeShader("../assets/shaders/cube.vert",
+                    "../assets/shaders/cube.frag");
 
   // clang-format off
 float vertices[] = {
@@ -106,8 +109,9 @@ float vertices[] = {
   // load textures (we now use a utility function to keep the code more
   // organized)
   // -----------------------------------------------------------------------------
-  unsigned int diffuseMap = loadTexture("../textures/container2.png");
-  unsigned int specularMap = loadTexture("../textures/container2_specular.png");
+  unsigned int diffuseMap = loadTexture("../assets/textures/container2.png");
+  unsigned int specularMap =
+      loadTexture("../assets/textures/container2_specular.png");
 
   // shader configuration
   // --------------------
