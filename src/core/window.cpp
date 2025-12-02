@@ -62,3 +62,8 @@ int Window::init_glad() {
 bool Window::shouldClose() const { return glfwWindowShouldClose(window_); }
 
 void Window::swapBuffers() { glfwSwapBuffers(window_); }
+
+void Window::setDimensions(int width, int height) {
+  SCR_WIDTH = width;
+  SCR_HEIGHT = height;
+}

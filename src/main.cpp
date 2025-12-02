@@ -1,5 +1,6 @@
 #include "core/window.hpp"
 #include "pch.hpp"
+#include "render/mesh.hpp"
 #include "render/shader.hpp"
 #include "render/texture.hpp"
 #include "scene/scene.hpp"
@@ -10,81 +11,6 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 // + 4 makes FPS closer to target idk why
 const double TARGET_FPS = 144.0 + 4;
 const double TARGET_FRAME_TIME = 1.0 / TARGET_FPS; // seconds
-
-struct Mesh {
-  GLuint vao = 0;
-  GLuint vbo = 0;
-};
-
-Mesh createCubeMesh() {
-  // clang-format off
-    static float vertices[] = {
-        // positions          // normals           // texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-    };
- 
-    Mesh m{};
-    glGenVertexArrays(1, &m.vao);
-    glGenBuffers(1, &m.vbo);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindVertexArray(m.vao);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-    return m; // clang-format on
-}
 
 void limitFrameRate(
     const std::chrono::high_resolution_clock::time_point &start) {
@@ -117,15 +43,7 @@ int main() {
   Shader cubeShader("../assets/shaders/cube.vert",
                     "../assets/shaders/cube.frag");
 
-  Mesh cubeMesh = createCubeMesh();
-  Mesh lightCubeMesh = {0, cubeMesh.vbo};
-
-  glGenVertexArrays(1, &lightCubeMesh.vao);
-  glBindVertexArray(lightCubeMesh.vao);
-  glBindBuffer(GL_ARRAY_BUFFER, cubeMesh.vbo);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
+  Mesh cubeMesh = Mesh::createCube();
 
   // load textures (we now use a utility function to keep the code more
   // organized)
@@ -195,7 +113,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, specularMap);
 
     // render the cube
-    glBindVertexArray(cubeMesh.vao);
+    glBindVertexArray(cubeMesh.vao());
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // also draw the lamp object
@@ -207,7 +125,7 @@ int main() {
     model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
     lightShader.setMat4("model", model);
 
-    glBindVertexArray(lightCubeMesh.vao);
+    glBindVertexArray(cubeMesh.vao());
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     window.swapBuffers();
@@ -224,10 +142,6 @@ int main() {
       std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
     }
   }
-
-  glDeleteVertexArrays(1, &cubeMesh.vao);
-  glDeleteVertexArrays(1, &lightCubeMesh.vao);
-  glDeleteBuffers(1, &cubeMesh.vbo);
 
   return 0;
 }

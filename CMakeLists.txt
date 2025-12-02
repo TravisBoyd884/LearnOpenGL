@@ -15,6 +15,7 @@ add_executable(Engine
     src/core/window.cpp
     src/stb_image.cpp
     src/render/texture.cpp
+    src/render/mesh.cpp
 )
 
 # --- Include directories ---

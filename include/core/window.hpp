@@ -14,6 +14,7 @@ public:
 
   uint width() const { return SCR_WIDTH; }
   uint height() const { return SCR_HEIGHT; }
+  void setDimensions(int width, int height);
 
 private:
   inline static bool s_glfwInitialized = false;

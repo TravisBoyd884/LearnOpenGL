@@ -1,6 +1,6 @@
 #include "scene/scene.hpp"
 #include <glad/glad.h>
-
+#include <iostream>
 Scene::Scene(Window &window)
     : window_(window), SCR_WIDTH(window.width()), SCR_HEIGHT(window.height()),
       camera_{glm::vec3(0.0f, 0.0f, 3.0f)}, lastX(SCR_WIDTH / 2.0f),
@@ -41,8 +41,11 @@ void Scene::framebuffer_size_callback(GLFWwindow *win, int width, int height) {
   auto *self = static_cast<Scene *>(glfwGetWindowUserPointer(win));
   if (!self)
     return;
+
   self->SCR_WIDTH = width;
   self->SCR_HEIGHT = height;
+  self->window_.setDimensions(width, height);
+
   glViewport(0, 0, width, height);
 }
 //
@@ -58,10 +61,12 @@ void Scene::mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
     self->lastX = xpos;
     self->lastY = ypos;
     self->firstMouse = false;
+    return; // <--- don't compute offsets on this frame
   }
 
   float xoffset = xpos - self->lastX;
-  float yoffset = self->lastY - ypos;
+  float yoffset =
+      self->lastY - ypos; // reversed since y-coordinates go from top to bottom
 
   self->lastX = xpos;
   self->lastY = ypos;
